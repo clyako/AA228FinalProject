@@ -5,7 +5,7 @@ import robotInitialization as rob
 import csv
 import os.path
 from os import path
-import serialTest as grasp
+import serialCom as grasp
 import time
 
 angleIncrement = 5
