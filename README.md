@@ -10,4 +10,4 @@ The serial port also needs to be identified before file execution, but this can 
 
 The code can be run by executing the sarsaLambda file from a terminal using the command: python3 sarsaLambda.py
 
-All files were created an executed using Python 3 on a computer running Ubuntu 16.
+All files were created an executed using Python 3 on a computer running Ubuntu 16.04.
