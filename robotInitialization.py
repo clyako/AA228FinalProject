@@ -19,6 +19,7 @@ v = 0.05
 a = 0.3
 v_rot = 1.05
 a_rot = 1.4
+moveRobot = False
 
 def robotHome():
     homePos = np.array([-45.0, -45.0, -90.0, -135.0, 90.0, 0.0]) * np.pi / 180
@@ -60,18 +61,40 @@ def getJoints():
 def updateRobot(action, newState):
     pos = rob.get_pos()
     rot = rob.getj()
+    # use this for smooth motions
+    pose = rob.get_pose()
+    # need 
     if action == 0:
         pos[2] += 0.005
-        rob.set_pos(pos, a, v)
+        if moveRobot:
+            rob.set_pos(pos, a, v)
+        # UPDATE POSE
+        # in m?
+        pose[2] += 0.005
+
     elif action == 1:
         pos[2] -= 0.005
-        rob.set_pos(pos, a, v)
+        if moveRobot:
+            rob.set_pos(pos, a, v)
+        # UPDATE POSE
+        pose[2] -= 0.005
+
     elif action == 2:
         rot[5] += 5 * np.pi / 180
-        rob.movej(rot, a_rot, v_rot)
+        if moveRobot:
+            rob.movej(rot, a_rot, v_rot)
+        # UPDATE POSE
+        pose[5] += 5 * np.pi / 180
+
     elif action == 3:
         rot[5] -= 5 * np.pi / 180
-        rob.movej(rot, a_rot, v_rot)
+        if moveRobot:
+            rob.movej(rot, a_rot, v_rot)
+        # UPDATE POSE
+        pose[5] = 5 * np.pi / 180
+
+    return pose
+
 
 def close():
     rob.close()

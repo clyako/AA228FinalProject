@@ -11,6 +11,9 @@ import time
 angleIncrement = 5
 heightIncrement = 5
 manualControl = False
+moveRobot = True
+poseList = []
+
 
 def initQ():
   if path.exists('Q.csv') and input("File exists, import file? [y/n]: ") == "y":
@@ -69,20 +72,20 @@ def stateToInds(state):
 
   return stateIndices.astype(int)
 
-def updateState(action, currentState):
+def updateState(action, currentState, poseList):
   nextState = currentState
   if action == 0 and currentState[0] < 450:
     nextState[0] = currentState[0] + heightIncrement
-    rob.updateRobot(action, nextState)
+    poseList.append(rob.updateRobot(action, nextState))
   elif action == 1 and currentState[0] > 185:
     nextState[0] = currentState[0] - heightIncrement
-    rob.updateRobot(action, nextState)
+    poseList.append(rob.updateRobot(action, nextState))
   elif action == 2 and currentState[1] < 180:
     nextState[1] = currentState[1] + angleIncrement
-    rob.updateRobot(action, nextState)
+    poseList.append(rob.updateRobot(action, nextState))
   elif action == 3 and currentState[1] > -180:
     nextState[1] = currentState[1] - angleIncrement
-    rob.updateRobot(action, nextState)
+    poseList.append(rob.updateRobot(action, nextState))
   return nextState
 
 def reshapeQ(Q):
@@ -117,7 +120,7 @@ def updateQ():
   epsilon = 0.15
   numActions = 5
 
-  for ep in range(numEpisodes): # what are these episodes?
+  for ep in range(numEpisodes):
     # initialize N
     N = initN(Q)
     #get the initial pos/rot state; round to the nearest 5 for pos
@@ -156,7 +159,7 @@ def updateQ():
         reward = -1
       
       # observe the new state based on the action taken from the current state and execute the action
-      nextState = updateState(currentAction, currentState)
+      nextState = updateState(currentAction, currentState, poseList)
       # get possible actions
       nextActionProbs = policy(currentStateInds)
       # select the next action
@@ -202,6 +205,7 @@ def updateQ():
 # this file should be run from the terminal. The below commands will be executed.
 boxAngle = - rob.execute() * np.pi / 180
 updateQ()
+rob.movexs("movej", poseList, acc=0.01, vel=0.01, radius=0.01, wait=True, threshold=None)
 input("Press Enter To Close")
 rob.close()
 grasp.serialClose()
